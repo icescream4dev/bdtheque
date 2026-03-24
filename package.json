@@ -1,0 +1,18 @@
+{
+  "name": "bdtheque",
+  "version": "1.0.0",
+  "description": "Ce projet est une API REST développée en Node.js / Express permettant de récupérer des informations sur des bandes dessinées (BD) francophones à partir de leur numéro ISBN.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "axios": "^1.13.6",
+    "cors": "^2.8.6",
+    "express": "^5.2.1"
+  }
+}
