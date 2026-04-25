@@ -8,11 +8,15 @@ export const searchComics = async (query: string): Promise<GoogleBookItem[]> => 
   // Recherche élargie pour inclure BD, albums et romans graphiques
   const searchUrl = `${GOOGLE_BOOKS_API_URL}?q=${encodeURIComponent(query)}&maxResults=20&langRestrict=fr&printType=books`;
 
+  console.log(`[API] Appel Google Books: ${searchUrl}`);
+
   try {
     const response = await fetch(searchUrl);
 
     if (!response.ok) {
-      throw new Error(`Erreur lors de la recherche: ${response.statusText}`);
+      const errorBody = await response.text();
+      console.error(`[API] Erreur HTTP ${response.status}: ${errorBody}`);
+      throw new Error(`Erreur API Google Books (${response.status})`);
     }
 
     const data: GoogleBooksApiResponse = await response.json();

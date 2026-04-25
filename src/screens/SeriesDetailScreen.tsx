@@ -56,10 +56,7 @@ export default function SeriesDetailScreen() {
 
   // 3. Préparation de la liste des volumes à afficher
   const volumesToDisplay = React.useMemo(() => {
-    if (seriesId) {
-      // On fetchera ça via une query séparée pour avoir les détails locaux (isRead, etc)
-      return null; 
-    }
+    if (seriesId) return null; 
     return searchVolumes?.map(v => {
       const { volumeNumber } = parseBdTitle(v.volumeInfo.title || '');
       return {
@@ -268,4 +265,5 @@ const styles = StyleSheet.create({
   readInactive: { backgroundColor: '#334155' },
   removeBtn: { backgroundColor: '#e11d48' },
   addBtn: { backgroundColor: '#10b981' },
+  placeholderImage: { justifyContent: 'center', alignItems: 'center', backgroundColor: '#1e293b' }
 });
