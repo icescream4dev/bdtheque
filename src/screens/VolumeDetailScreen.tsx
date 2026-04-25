@@ -92,12 +92,19 @@ export default function VolumeDetailScreen() {
       return await removeVolumeFromLibrary(currentId);
     },
     onSuccess: (success) => {
+      console.log("[DEBUG] Mutation removal success:", success);
       if (success) {
         queryClient.invalidateQueries({ queryKey: ['volumeDetail', currentId] });
         queryClient.invalidateQueries({ queryKey: ['recentVolumes'] });
         Alert.alert("Succès", "La BD a été retirée de votre collection.");
         navigation.goBack();
+      } else {
+        Alert.alert("Erreur", "La base de données a refusé la suppression.");
       }
+    },
+    onError: (error) => {
+      console.error("[DEBUG] Mutation removal error:", error);
+      Alert.alert("Erreur", "Impossible de supprimer cette BD.");
     }
   });
 
@@ -169,14 +176,13 @@ export default function VolumeDetailScreen() {
             <TouchableOpacity
               style={[styles.actionButton, styles.removeButton]}
               onPress={() => {
-                Alert.alert(
-                  "Confirmation",
-                  "Voulez-vous vraiment retirer cette BD de votre collection ?",
-                  [
-                    { text: "Annuler", style: "cancel" },
-                    { text: "Retirer", style: "destructive", onPress: () => removeFromLibraryMutation.mutate() }
-                  ]
-                );
+                console.log("[DEBUG] Clic sur le bouton Retirer, ID:", currentId);
+                // Utilisation de confirm() direct sur le web pour éviter les bugs de Alert.alert
+                const confirmed = window.confirm ? window.confirm("Voulez-vous vraiment retirer cette BD de votre collection ?") : true;
+                if (confirmed) {
+                  console.log("[DEBUG] Confirmation reçue, lancement de la mutation");
+                  removeFromLibraryMutation.mutate();
+                }
               }}
             >
               <Ionicons name="trash-outline" size={24} color="#e63946" style={styles.buttonIcon} />
@@ -207,27 +213,142 @@ export default function VolumeDetailScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
-  loader: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  errorText: { fontSize: 16, color: 'red', textAlign: 'center', marginTop: 32 },
-  header: { backgroundColor: '#f5f5f5', paddingVertical: 24, alignItems: 'center', borderBottomWidth: 1, borderBottomColor: '#eee' },
-  coverImage: { width: 200, height: 280, borderRadius: 8, shadowColor: '#000', shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 6, elevation: 5 },
-  placeholderImage: { backgroundColor: '#e0e0e0', justifyContent: 'center', alignItems: 'center' },
-  infoContainer: { padding: 24 },
-  title: { fontSize: 24, fontWeight: 'bold', color: '#333', marginBottom: 4 },
-  authors: { fontSize: 18, color: '#666', marginBottom: 20, fontStyle: 'italic' },
-  detailsBox: { backgroundColor: '#f9f9f9', padding: 16, borderRadius: 8, marginBottom: 24, borderWidth: 1, borderColor: '#eee' },
-  detailRow: { flexDirection: 'row', marginBottom: 8 },
-  detailLabel: { fontWeight: '600', color: '#555', width: 100 },
-  detailValue: { flex: 1, color: '#333' },
-  descriptionBox: { marginBottom: 24 },
-  sectionTitle: { fontSize: 18, fontWeight: 'bold', marginBottom: 8, color: '#444' },
-  descriptionText: { fontSize: 14, color: '#555', lineHeight: 22 },
-  actionButton: { flexDirection: 'row', alignItems: 'center', justifyContent: 'center', padding: 16, borderRadius: 8, marginTop: 12 },
-  readButtonInactive: { backgroundColor: '#e63946' },
-  readButtonActive: { backgroundColor: '#4CAF50' },
-  addButton: { backgroundColor: '#3b82f6' },
-  removeButton: { backgroundColor: '#fff', borderWidth: 1, borderColor: '#e63946' },
-  buttonIcon: { marginRight: 8 },
-  actionButtonText: { color: '#fff', fontSize: 16, fontWeight: 'bold' },
+  container: { 
+    flex: 1, 
+    backgroundColor: '#0f172a' 
+  },
+  loader: { 
+    flex: 1, 
+    justifyContent: 'center', 
+    alignItems: 'center',
+    backgroundColor: '#0f172a'
+  },
+  errorText: { 
+    fontSize: 16, 
+    color: '#fb7185', 
+    textAlign: 'center', 
+    marginTop: 32,
+    fontWeight: '600'
+  },
+  header: { 
+    backgroundColor: '#1e293b', 
+    paddingVertical: 40, 
+    alignItems: 'center', 
+    borderBottomWidth: 1, 
+    borderBottomColor: '#334155',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.5,
+    shadowRadius: 20,
+    elevation: 15
+  },
+  coverImage: { 
+    width: 220, 
+    height: 310, 
+    borderRadius: 16, 
+    shadowColor: '#000', 
+    shadowOffset: { width: 0, height: 12 }, 
+    shadowOpacity: 0.5, 
+    shadowRadius: 16, 
+    elevation: 10,
+    backgroundColor: '#0f172a'
+  },
+  placeholderImage: { 
+    justifyContent: 'center', 
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#334155'
+  },
+  infoContainer: { 
+    padding: 24 
+  },
+  title: { 
+    fontSize: 28, 
+    fontWeight: '900', 
+    color: '#f8fafc', 
+    marginBottom: 8,
+    lineHeight: 34
+  },
+  authors: { 
+    fontSize: 18, 
+    color: '#94a3b8', 
+    marginBottom: 24, 
+    fontWeight: '600'
+  },
+  detailsBox: { 
+    backgroundColor: '#1e293b', 
+    padding: 20, 
+    borderRadius: 16, 
+    marginBottom: 24, 
+    borderWidth: 1, 
+    borderColor: '#334155' 
+  },
+  detailRow: { 
+    flexDirection: 'row', 
+    marginBottom: 10 
+  },
+  detailLabel: { 
+    fontWeight: '700', 
+    color: '#64748b', 
+    width: 110,
+    fontSize: 14,
+    textTransform: 'uppercase',
+    letterSpacing: 1
+  },
+  detailValue: { 
+    flex: 1, 
+    color: '#cbd5e1',
+    fontSize: 15,
+    fontWeight: '500'
+  },
+  descriptionBox: { 
+    marginBottom: 32 
+  },
+  sectionTitle: { 
+    fontSize: 20, 
+    fontWeight: '800', 
+    marginBottom: 12, 
+    color: '#e11d48' 
+  },
+  descriptionText: { 
+    fontSize: 16, 
+    color: '#94a3b8', 
+    lineHeight: 24 
+  },
+  actionButton: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    justifyContent: 'center', 
+    padding: 18, 
+    borderRadius: 16, 
+    marginTop: 14,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 4
+  },
+  readButtonInactive: { 
+    backgroundColor: '#334155' 
+  },
+  readButtonActive: { 
+    backgroundColor: '#10b981' 
+  },
+  addButton: { 
+    backgroundColor: '#e11d48' 
+  },
+  removeButton: { 
+    backgroundColor: 'transparent', 
+    borderWidth: 2, 
+    borderColor: '#e11d48',
+    marginTop: 20
+  },
+  buttonIcon: { 
+    marginRight: 10 
+  },
+  actionButtonText: { 
+    color: '#fff', 
+    fontSize: 17, 
+    fontWeight: '800' 
+  },
 });

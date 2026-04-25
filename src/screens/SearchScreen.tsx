@@ -37,8 +37,12 @@ export default function SearchScreen() {
         queryClient.invalidateQueries({ queryKey: ['recentVolumes'] });
         Alert.alert("Succès", "La BD a été ajoutée à votre collection.");
       } else {
-        Alert.alert("Erreur", "Impossible d'ajouter la BD.");
+        Alert.alert("Erreur", "Impossible d'ajouter la BD (Erreur SQL).");
       }
+    },
+    onError: (error) => {
+      console.error("Mutation Error:", error);
+      Alert.alert("Erreur", "Une erreur inattendue est survenue lors de l'ajout.");
     }
   });
 
@@ -100,11 +104,18 @@ export default function SearchScreen() {
               </View>
 
               <TouchableOpacity
-                style={styles.addButton}
+                style={[styles.addButton, addToLibraryMutation.isPending && styles.disabledButton]}
                 onPress={() => addToLibraryMutation.mutate(item)}
+                disabled={addToLibraryMutation.isPending}
               >
-                <Ionicons name="add-circle-outline" size={20} color="#e63946" />
-                <Text style={styles.addButtonText}>Ajouter</Text>
+                {addToLibraryMutation.isPending ? (
+                  <ActivityIndicator size="small" color="#fff" />
+                ) : (
+                  <>
+                    <Ionicons name="add-circle-outline" size={20} color="#fff" />
+                    <Text style={styles.addButtonText}>Ajouter</Text>
+                  </>
+                )}
               </TouchableOpacity>
             </View>
           </TouchableOpacity>
@@ -115,20 +126,100 @@ export default function SearchScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f5f5f5' },
-  searchContainer: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#fff', margin: 16, paddingHorizontal: 12, borderRadius: 8, borderWidth: 1, borderColor: '#ddd', height: 48 },
-  searchIcon: { marginRight: 8 },
-  searchInput: { flex: 1, height: '100%', fontSize: 16 },
+  container: { 
+    flex: 1, 
+    backgroundColor: '#0f172a' // Dark Navy background
+  },
+  searchContainer: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    backgroundColor: '#1e293b', 
+    margin: 16, 
+    paddingHorizontal: 16, 
+    borderRadius: 16, 
+    height: 56,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 5
+  },
+  searchIcon: { marginRight: 12 },
+  searchInput: { 
+    flex: 1, 
+    height: '100%', 
+    fontSize: 16, 
+    color: '#f8fafc' 
+  },
   loader: { marginTop: 32 },
-  errorText: { color: 'red', textAlign: 'center', marginTop: 16 },
-  emptyText: { textAlign: 'center', color: '#666', marginTop: 16 },
-  card: { flexDirection: 'row', backgroundColor: '#fff', marginHorizontal: 16, marginBottom: 12, borderRadius: 8, padding: 12, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.1, shadowRadius: 2, elevation: 2 },
-  coverImage: { width: 70, height: 100, borderRadius: 4 },
-  placeholderImage: { backgroundColor: '#eee', justifyContent: 'center', alignItems: 'center' },
-  cardContent: { flex: 1, marginLeft: 12, justifyContent: 'space-between' },
-  title: { fontSize: 16, fontWeight: 'bold', color: '#333' },
-  authors: { fontSize: 14, color: '#666', marginTop: 4 },
-  date: { fontSize: 12, color: '#999', marginTop: 2 },
-  addButton: { flexDirection: 'row', alignItems: 'center', marginTop: 8 },
-  addButtonText: { color: '#e63946', marginLeft: 4, fontWeight: '600' },
+  errorText: { color: '#fb7185', textAlign: 'center', marginTop: 16, fontWeight: '600' },
+  emptyText: { textAlign: 'center', color: '#94a3b8', marginTop: 32, fontSize: 16 },
+  card: { 
+    flexDirection: 'row', 
+    backgroundColor: '#1e293b', 
+    marginHorizontal: 16, 
+    marginBottom: 16, 
+    borderRadius: 20, 
+    padding: 12,
+    borderWidth: 1,
+    borderColor: '#334155',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.2,
+    shadowRadius: 15,
+    elevation: 8
+  },
+  coverImage: { 
+    width: 85, 
+    height: 120, 
+    borderRadius: 12,
+    backgroundColor: '#334155'
+  },
+  placeholderImage: { 
+    justifyContent: 'center', 
+    alignItems: 'center' 
+  },
+  cardContent: { 
+    flex: 1, 
+    marginLeft: 16, 
+    justifyContent: 'space-between',
+    paddingVertical: 4
+  },
+  title: { 
+    fontSize: 18, 
+    fontWeight: '800', 
+    color: '#f8fafc',
+    lineHeight: 22
+  },
+  authors: { 
+    fontSize: 14, 
+    color: '#94a3b8', 
+    marginTop: 6,
+    fontWeight: '500'
+  },
+  date: { 
+    fontSize: 12, 
+    color: '#64748b', 
+    marginTop: 4 
+  },
+  addButton: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    backgroundColor: '#e11d48',
+    alignSelf: 'flex-start',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 10,
+    marginTop: 10
+  },
+  addButtonText: { 
+    color: '#fff', 
+    marginLeft: 6, 
+    fontWeight: '700',
+    fontSize: 13
+  },
+  disabledButton: {
+    opacity: 0.6,
+    backgroundColor: '#64748b'
+  }
 });

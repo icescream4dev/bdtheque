@@ -24,12 +24,15 @@ export const addVolumeToLibrary = async (book: GoogleBookItem): Promise<boolean>
       ? book.volumeInfo.imageLinks.thumbnail.replace('http:', 'https:')
       : null;
 
+    console.log(`[DB] Tentative d'ajout: ${title} (ID: ${volumeId})`);
+
     // Attention au schema qui attend un seriesId, on le met à null pour l'instant
     await db.runAsync(
       `INSERT OR REPLACE INTO volumes (id, seriesId, title, publishedDate, isbn, coverImage, isRead) VALUES (?, ?, ?, ?, ?, ?, ?)`,
       [volumeId, null, title, publishedDate, isbn, coverImage, 0]
     );
 
+    console.log(`[DB] Succès pour: ${title}`);
     return true;
   } catch (error) {
     console.error('Erreur lors de l ajout à la bibliothèque :', error);
@@ -40,7 +43,9 @@ export const addVolumeToLibrary = async (book: GoogleBookItem): Promise<boolean>
 export const removeVolumeFromLibrary = async (volumeId: string): Promise<boolean> => {
   try {
     const db = await getDbConnection();
+    console.log(`[DB] Tentative de suppression ID: ${volumeId}`);
     await db.runAsync('DELETE FROM volumes WHERE id = ?', [volumeId]);
+    console.log(`[DB] Suppression réussie ID: ${volumeId}`);
     return true;
   } catch (error) {
     console.error('Erreur lors de la suppression de la bibliothèque :', error);

@@ -8,10 +8,25 @@ import { initDB } from './src/database/schema';
 const queryClient = new QueryClient();
 
 export default function App() {
+  const [isReady, setIsReady] = React.useState(false);
+
   useEffect(() => {
-    // Initialise la base de données au lancement de l'application
-    initDB();
+    async function prepare() {
+      try {
+        await initDB();
+      } catch (e) {
+        console.warn(e);
+      } finally {
+        setIsReady(true);
+      }
+    }
+
+    prepare();
   }, []);
+
+  if (!isReady) {
+    return null; // Ou un splash screen
+  }
 
   return (
     <QueryClientProvider client={queryClient}>

@@ -5,8 +5,8 @@ const GOOGLE_BOOKS_API_URL = 'https://www.googleapis.com/books/v1/volumes';
 export const searchComics = async (query: string): Promise<GoogleBookItem[]> => {
   if (!query) return [];
 
-  // Utilisation de mots-clés spécifiques à la BD dans la requête
-  const searchUrl = `${GOOGLE_BOOKS_API_URL}?q=${encodeURIComponent(query)}+subject:comics&maxResults=20&langRestrict=fr`;
+  // Recherche élargie pour inclure BD, albums et romans graphiques
+  const searchUrl = `${GOOGLE_BOOKS_API_URL}?q=${encodeURIComponent(query)}&maxResults=20&langRestrict=fr&printType=books`;
 
   try {
     const response = await fetch(searchUrl);

@@ -37,8 +37,22 @@ function TabNavigator() {
           }
           return <Ionicons name={iconName} size={size} color={color} />;
         },
-        tabBarActiveTintColor: '#e63946', // Rouge BD
-        tabBarInactiveTintColor: 'gray',
+        tabBarActiveTintColor: '#e11d48',
+        tabBarInactiveTintColor: '#94a3b8',
+        tabBarStyle: {
+          backgroundColor: '#1e293b',
+          borderTopWidth: 0,
+          elevation: 10,
+          height: 60,
+          paddingBottom: 8,
+        },
+        headerStyle: {
+          backgroundColor: '#0f172a',
+        },
+        headerTintColor: '#f8fafc',
+        headerTitleStyle: {
+          fontWeight: '900',
+        },
       })}
     >
       <Tab.Screen name="Accueil" component={HomeScreen} />
@@ -49,7 +63,17 @@ function TabNavigator() {
 
 export default function AppNavigator() {
   return (
-    <Stack.Navigator>
+    <Stack.Navigator
+      screenOptions={{
+        headerStyle: {
+          backgroundColor: '#0f172a',
+        },
+        headerTintColor: '#f8fafc',
+        headerTitleStyle: {
+          fontWeight: '800',
+        },
+      }}
+    >
       <Stack.Screen
         name="Tabs"
         component={TabNavigator}
@@ -58,12 +82,12 @@ export default function AppNavigator() {
       <Stack.Screen
         name="SeriesDetail"
         component={SeriesDetailScreen}
-        options={{ title: 'Détails de la Série' }}
+        options={{ title: 'Série' }}
       />
       <Stack.Screen
         name="VolumeDetail"
         component={VolumeDetailScreen}
-        options={{ title: 'Détails du Tome' }}
+        options={{ title: 'Détails' }}
       />
     </Stack.Navigator>
   );
