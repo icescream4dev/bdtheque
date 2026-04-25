@@ -10,7 +10,11 @@ import { GoogleBookItem } from '../types/api';
 
 export type RootStackParamList = {
   Tabs: undefined;
-  SeriesDetail: { seriesId: string };
+  SeriesDetail: { 
+    seriesId?: string; 
+    seriesTitle?: string; 
+    searchVolumes?: GoogleBookItem[];
+  };
   // On unifie la route de détail
   // 'volumeId' est utilisé si on vient de la bibliothèque locale
   // 'googleBook' est passé si on vient de l'écran de recherche (l'objet complet évite un refetch)

@@ -19,12 +19,17 @@ interface DBVolume {
 export default function HomeScreen() {
   const navigation = useNavigation<NavigationProp>();
 
-  const { data: recentVolumes = [], isLoading } = useQuery({
-    queryKey: ['recentVolumes'],
+  const { data: librarySeries = [], isLoading } = useQuery({
+    queryKey: ['librarySeries'],
     queryFn: async () => {
       const db = await getDbConnection();
-      const result = await db.getAllAsync('SELECT * FROM volumes ORDER BY id DESC LIMIT 10');
-      return result as DBVolume[];
+      // On récupère les séries qui ont au moins un tome dans la collection
+      const result = await db.getAllAsync(`
+        SELECT DISTINCT s.* FROM series s
+        JOIN volumes v ON v.seriesId = s.id
+        ORDER BY s.title ASC
+      `);
+      return result as any[];
     }
   });
 
@@ -32,38 +37,33 @@ export default function HomeScreen() {
     <View style={styles.container}>
       <Text style={styles.headerTitle}>Ma Bédéthèque</Text>
 
-      {recentVolumes.length === 0 && !isLoading ? (
+      {librarySeries.length === 0 && !isLoading ? (
         <View style={styles.emptyContainer}>
-          <Ionicons name="library-outline" size={64} color="#ccc" />
+          <Ionicons name="library-outline" size={64} color="#94a3b8" />
           <Text style={styles.emptyText}>Votre bédéthèque est vide.</Text>
-          <Text style={styles.emptySubText}>Utilisez la recherche pour ajouter vos premières BD !</Text>
+          <Text style={styles.emptySubText}>Utilisez la recherche pour ajouter vos premières séries !</Text>
         </View>
       ) : (
         <View style={styles.sectionContainer}>
-          <Text style={styles.sectionTitle}>Derniers ajouts</Text>
+          <Text style={styles.sectionTitle}>Mes Séries</Text>
           <FlatList
             horizontal
-            data={recentVolumes}
+            data={librarySeries}
             showsHorizontalScrollIndicator={false}
             keyExtractor={(item) => item.id}
             renderItem={({ item }) => (
               <TouchableOpacity
                 style={styles.bookCard}
-                onPress={() => navigation.navigate('VolumeDetail', { volumeId: item.id, context: 'library' })}
+                onPress={() => navigation.navigate('SeriesDetail', { seriesId: item.id })}
               >
                 {item.coverImage ? (
                   <Image source={{ uri: item.coverImage }} style={styles.coverImage} />
                 ) : (
                   <View style={[styles.coverImage, styles.placeholderImage]}>
-                    <Ionicons name="book-outline" size={32} color="#999" />
+                    <Ionicons name="book-outline" size={32} color="#475569" />
                   </View>
                 )}
                 <Text style={styles.bookTitle} numberOfLines={2}>{item.title}</Text>
-                {item.isRead === 1 && (
-                  <View style={styles.readBadge}>
-                    <Ionicons name="checkmark-circle" size={16} color="#fff" />
-                  </View>
-                )}
               </TouchableOpacity>
             )}
           />
