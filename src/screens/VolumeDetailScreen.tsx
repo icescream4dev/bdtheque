@@ -33,10 +33,10 @@ export default function VolumeDetailScreen() {
   const { data: localVolume, isLoading: isLoadingLocal, refetch } = useQuery({
     queryKey: ['volumeDetail', currentId],
     queryFn: async () => {
-      if (!currentId) return undefined;
+      if (!currentId) return null;
       const db = await getDbConnection();
       const result = await db.getAllAsync('SELECT * FROM volumes WHERE id = ?', [currentId]);
-      return result[0] as DBVolumeDetail | undefined;
+      return (result[0] as DBVolumeDetail) || null;
     },
     enabled: !!currentId,
   });
